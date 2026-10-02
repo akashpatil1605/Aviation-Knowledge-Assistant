@@ -1,7 +1,21 @@
 ﻿import os
 from datetime import datetime
 
+from dotenv import load_dotenv
 import streamlit as st
+from streamlit.errors import StreamlitSecretNotFoundError
+
+load_dotenv(override=True)
+
+for secret_name in ("GROQ_API_KEY", "TAVILY_API_KEY"):
+    if os.getenv(secret_name):
+        continue
+    try:
+        secret_value = st.secrets.get(secret_name)
+    except StreamlitSecretNotFoundError:
+        break
+    if secret_value:
+        os.environ[secret_name] = str(secret_value)
 
 from main import app
 
